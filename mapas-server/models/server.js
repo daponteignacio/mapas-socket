@@ -2,14 +2,16 @@
 const express = require("express");
 const http = require("http");
 const socketio = require("socket.io");
-const path = require("path");
+const { fileURLToPath } = require("url");
+const { join , resolve} = require("path");
 
 const Sockets = require("./sockets");
+const dirname = resolve();
 
 class Server {
   constructor() {
     this.app = express();
-    this.port = process.env.PORT;
+    this.port = process.env.PORT || 8082;
 
     // Http server
     this.server = http.createServer(this.app);
@@ -17,7 +19,7 @@ class Server {
     // Configuraciones de sockets
     this.io = socketio(this.server, {
       cors: {
-        origin: "http://127.0.0.1:5173",
+        origin: ['http://localhost:8082'],
         methods: ["GET", "POST"],
       },
     });
@@ -25,7 +27,7 @@ class Server {
 
   middlewares() {
     // Desplegar el directorio público
-    this.app.use(express.static(path.resolve(__dirname, "../public")));
+    this.app.use(express.static(join(dirname, "../mapas-app/dist")));
   }
 
   // Esta configuración se puede tener aquí o como propieda de clase
